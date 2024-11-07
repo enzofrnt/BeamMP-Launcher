@@ -9,6 +9,10 @@
 #include <iostream>
 #include <zlib.h>
 
+#ifndef _WIN32
+#define memcpy_s(dest, destsz, src, count) memcpy(dest, src, count)
+#endif
+
 #define Biggest 30000
 std::string Comp(std::string Data){
     char*C = new char[Biggest];
