@@ -181,6 +181,10 @@ void InitLauncher(int argc, char* argv[]) {
     SetConsoleTitleA(("BeamMP Launcher v" + std::string(GetVer()) + GetPatch()).c_str());
     InitLog();
     CheckName(argc, argv);
+    //Display a message if we are on MacOS
+    #ifdef __APPLE__
+    info("MacOS Detected!");
+    #endif
     #ifndef __APPLE__
     LinuxPatch();
     #endif
