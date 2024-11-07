@@ -31,6 +31,7 @@ elseif (APPLE)
     include_directories(${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
     link_directories(${ZLIB_LIBRARY_DIRS} ${OPENSSL_LIBRARY_DIRS})
     target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES})
+    set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE TRUE)
 else() #MINGW
     add_definitions("-D_WIN32_WINNT=0x0600")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s --static")
