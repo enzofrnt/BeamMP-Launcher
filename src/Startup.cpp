@@ -176,18 +176,36 @@ void LinuxPatch(){
     info("Patched!");
 }
 
+void DetectWineHost() {
+    HMODULE hNtDll = GetModuleHandleA("ntdll.dll");
+    if (!hNtDll) return;
+
+    typedef void (CDECL *wine_get_host_version_t)(const char **, const char **);
+    wine_get_host_version_t wine_get_host_version = (wine_get_host_version_t)GetProcAddress(hNtDll, "wine_get_host_version");
+    if (!wine_get_host_version) return;
+
+    const char *sysname = nullptr;
+    const char *release = nullptr;
+    wine_get_host_version(&sysname, &release);
+
+    if (sysname) {
+        if (strcmp(sysname, "Darwin") == 0) {
+            info("Wine/Proton Detected on macOS! If you are on Windows, delete HKEY_CURRENT_USER\\Software\\Wine in regedit");
+            info("No patches will be applied for macOS.");
+        } else if (strcmp(sysname, "Linux") == 0) {
+            info("Wine/Proton Detected on Linux! If you are on Windows, delete HKEY_CURRENT_USER\\Software\\Wine in regedit");
+            info("Applying patches...");
+            LinuxPatch();
+        }
+    }
+}
+
 void InitLauncher(int argc, char* argv[]) {
     system("cls");
     SetConsoleTitleA(("BeamMP Launcher v" + std::string(GetVer()) + GetPatch()).c_str());
     InitLog();
     CheckName(argc, argv);
-    //Display a message if we are on MacOS
-    #ifdef __APPLE__
-    info("MacOS Detected!");
-    #endif
-    #ifndef __APPLE__
-    LinuxPatch();
-    #endif
+    DetectWineHost();
     CheckLocalKey();
     ConfigInit();
     CustomPort(argc, argv);
