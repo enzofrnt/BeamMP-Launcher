@@ -181,7 +181,9 @@ void InitLauncher(int argc, char* argv[]) {
     SetConsoleTitleA(("BeamMP Launcher v" + std::string(GetVer()) + GetPatch()).c_str());
     InitLog();
     CheckName(argc, argv);
+    #ifndef __APPLE__
     LinuxPatch();
+    #endif
     CheckLocalKey();
     ConfigInit();
     CustomPort(argc, argv);
