@@ -148,7 +148,7 @@ void LinuxPatch(){
     }
     RegCloseKey(hKey);
 
-    std::string Path = R"(Z:\home\)" + std::string(getenv("USER")) + R"(\.steam\steam\Steam.exe)";
+    std::string Path = R"(Z:\Users\)" + std::string(getenv("USER")) + R"(\.steam\steam\Steam.exe)";
 
     if(!fs::exists(Path)) {
         std::ofstream ofs(Path);
