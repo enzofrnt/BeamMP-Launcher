@@ -25,9 +25,15 @@ if (WIN32)
     link_directories(${VcpkgRoot}/lib)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${VcpkgRoot}/lib/discord-rpc.lib
             ZLIB::ZLIB OpenSSL::SSL OpenSSL::Crypto ws2_32)
-else(WIN32) #MINGW
+elseif (APPLE)
+    find_package(ZLIB REQUIRED)
+    find_package(OpenSSL REQUIRED)
+    include_directories(${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
+    link_directories(${ZLIB_LIBRARY_DIRS} ${OPENSSL_LIBRARY_DIRS})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES})
+else() #MINGW
     add_definitions("-D_WIN32_WINNT=0x0600")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -s --static")
     target_link_libraries(${PROJECT_NAME} discord-rpc ssl crypto ws2_32 ssp crypt32 z)
-endif(WIN32)
+endif()
 target_include_directories(${PROJECT_NAME} PRIVATE "include")
