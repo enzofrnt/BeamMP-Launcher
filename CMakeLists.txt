@@ -19,11 +19,6 @@ find_package(httplib CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(CURL REQUIRED)
 
-if(WIN32)
-    set(WIN32_RESOURCES Resources/app_icon.rc)
-    add_executable(${PROJECT_NAME} WIN32 ${source_files} ${WIN32_RESOURCES})
-endif()
-
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "BeamMP-Launcher")
 
 if (WIN32)
@@ -31,6 +26,8 @@ if (WIN32)
     find_package(OpenSSL REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             ZLIB::ZLIB OpenSSL::SSL OpenSSL::Crypto ws2_32 httplib::httplib nlohmann_json::nlohmann_json CURL::libcurl)
+    set(WIN32_RESOURCES Resources/app_icon.rc)
+    add_executable(${PROJECT_NAME} WIN32 ${source_files} ${WIN32_RESOURCES})
 elseif (LINUX)
     find_package(ZLIB REQUIRED)
     find_package(OpenSSL REQUIRED)
