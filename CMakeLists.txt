@@ -19,7 +19,11 @@ find_package(httplib CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(CURL REQUIRED)
 
-add_executable(${PROJECT_NAME} ${source_files})
+if(WIN32)
+    set(WIN32_RESOURCES Resources/app_icon.rc)
+    add_executable(${PROJECT_NAME} WIN32 ${source_files} ${WIN32_RESOURCES})
+endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "BeamMP-Launcher")
 
 if (WIN32)
