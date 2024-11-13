@@ -23,7 +23,12 @@ extern int UserID;
 void UpdateKey(const char* newKey) {
     if (newKey && std::isalnum(newKey[0])) {
         PrivateKey = newKey;
+        
+        #if defined(__APPLE__)
+        std::ofstream Key(std::string(getenv("HOME")) + "/Library/Application Support/BeamMP-Launcher/key");
+        #else
         std::ofstream Key("key");
+        #endif
         if (Key.is_open()) {
             Key << newKey;
             Key.close();
