@@ -21,7 +21,27 @@ find_package(httplib CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(CURL REQUIRED)
 
-add_executable(${PROJECT_NAME} ${source_files})
+if(APPLE)
+    # Ajoute l'icône à l'application macOS
+    set(APP_ICON ${CMAKE_SOURCE_DIR}/assets/img/AppIcon.icns)
+
+    add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${source_files} ${APP_ICON})
+
+    # Définir le fichier Info.plist pour macOS
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_BINARY_DIR}/Info.plist"
+        MACOSX_BUNDLE_ICON_FILE "AppIcon"  # Le nom du fichier .icns sans le chemin ni l'extension
+    )
+
+    # Assure-toi que le fichier .icns est copié dans le bundle
+    set_source_files_properties(${APP_ICON} PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources"
+    )
+else()
+    add_executable(${PROJECT_NAME} ${source_files})
+endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "BeamMP-Launcher")
 
 if (WIN32)

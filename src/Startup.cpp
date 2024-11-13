@@ -89,11 +89,19 @@ std::string GetPatch() {
 }
 
 std::string GetEP(const char* P) {
+#if defined(_WIN32) || defined(__linux__)
     static std::string Ret = [&]() {
         std::string path(P);
         return path.substr(0, path.find_last_of("\\/") + 1);
     }();
     return Ret;
+#elif defined(__APPLE__)
+    std::string Ret = std::string(getenv("HOME")) + "/Library/Application Support/BeamMP-Launcher/";
+    if (!fs::exists(Ret)) {
+        fs::create_directories(Ret);
+    }
+    return Ret;
+#endif
 }
 #if defined(_WIN32)
 void ReLaunch() {

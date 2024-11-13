@@ -12,7 +12,15 @@
 namespace fs = std::filesystem;
 
 std::string Branch;
+
+
+#ifdef __APPLE__
+std::string CachingDirectory = std::string(getenv("HOME")) + "/Library/Application Support/BeamMP-Launcher/Resources";
+std::string configPath = std::string(getenv("HOME")) + "/Library/Application Support/BeamMP-Launcher/Launcher.cfg";
+#else
 std::string CachingDirectory = "./Resources";
+std::string configPath = "Launcher.cfg";
+#endif
 
 void ParseConfig(const nlohmann::json& d) {
     if (d["Port"].is_number()) {
@@ -43,22 +51,34 @@ void ParseConfig(const nlohmann::json& d) {
 }
 
 void ConfigInit() {
-    if (fs::exists("Launcher.cfg")) {
-        std::ifstream cfg("Launcher.cfg");
+    // Créer le répertoire de configuration sur macOS si nécessaire
+    #ifdef __APPLE__
+    fs::path configDir = std::string(getenv("HOME")) + "/Library/Application Support/BeamMP-Launcher";
+    if (!fs::exists(configDir)) {
+        fs::create_directories(configDir);
+    }
+    #else
+    #TODO
+
+    #endif
+
+    if (fs::exists(configPath)) {
+        std::ifstream cfg(configPath);
         if (cfg.is_open()) {
-            auto Size = fs::file_size("Launcher.cfg");
+            auto Size = fs::file_size(configPath);
             std::string Buffer(Size, 0);
             cfg.read(&Buffer[0], Size);
             cfg.close();
             nlohmann::json d = nlohmann::json::parse(Buffer, nullptr, false);
             if (d.is_discarded()) {
-                fatal("Config failed to parse make sure it's valid JSON!");
+                fatal("Config failed to parse, make sure it's valid JSON!");
             }
             ParseConfig(d);
-        } else
-            fatal("Failed to open Launcher.cfg!");
+        } else {
+            fatal("Failed to open " + configPath + "!");
+        }
     } else {
-        std::ofstream cfg("Launcher.cfg");
+        std::ofstream cfg(configPath);
         if (cfg.is_open()) {
             cfg <<
                 R"({
