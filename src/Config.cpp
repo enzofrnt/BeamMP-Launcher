@@ -82,10 +82,10 @@ void ConfigInit() {
         if (cfg.is_open()) {
             cfg <<
                 R"({
-    "Port": 4444,
-    "Build": "Default",
-    "CachingDirectory": "./Resources"
-})";
+"Port": 4444,
+"Build": "Default",
+"CachingDirectory":)";
+            cfg << " \"" << CachingDirectory << "\"\n}";
             cfg.close();
         } else {
             fatal("Failed to write config on disk!");
