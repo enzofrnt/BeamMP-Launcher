@@ -20,22 +20,27 @@ extern std::string Username;
 extern std::string UserRole;
 extern int UserID;
 
+// Define the key file path based on the OS
+std::string GetKeyFilePath() {
+    #if defined(__APPLE__)
+    return std::string(getenv("HOME")) + "/Library/Application Support/BeamMP-Launcher/key";
+    #else
+    return "key";
+    #endif
+}
+
 void UpdateKey(const char* newKey) {
     if (newKey && std::isalnum(newKey[0])) {
         PrivateKey = newKey;
-        
-        #if defined(__APPLE__)
-        std::ofstream Key(std::string(getenv("HOME")) + "/Library/Application Support/BeamMP-Launcher/key");
-        #else
-        std::ofstream Key("key");
-        #endif
+
+        std::ofstream Key(GetKeyFilePath());
         if (Key.is_open()) {
             Key << newKey;
             Key.close();
         } else
             fatal("Cannot write to disk!");
-    } else if (fs::exists("key")) {
-        remove("key");
+    } else if (fs::exists(GetKeyFilePath())) {
+        remove(GetKeyFilePath().c_str());
     }
 }
 
@@ -106,10 +111,10 @@ std::string Login(const std::string& fields) {
 }
 
 void CheckLocalKey() {
-    if (fs::exists("key") && fs::file_size("key") < 100) {
-        std::ifstream Key("key");
+    if (fs::exists(GetKeyFilePath()) && fs::file_size(GetKeyFilePath()) < 100) {
+        std::ifstream Key(GetKeyFilePath());
         if (Key.is_open()) {
-            auto Size = fs::file_size("key");
+            auto Size = fs::file_size(GetKeyFilePath());
             std::string Buffer(Size, 0);
             Key.read(&Buffer[0], Size);
             Key.close();
